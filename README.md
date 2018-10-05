@@ -34,10 +34,10 @@ To install and test one or more NER systems, do the following:
 
 ```bash
 chmod a+x install/install*
-install/install_crfpp.sh <install-directory>
-install/install_stanford_ner.sh <install-directory>
-install/install_illinois_ner.sh <install-directory>
-install/install_neuroner.sh <install-directory>
+install/install_crfpp.sh install-directory
+install/install_stanford_ner.sh install-directory
+install/install_illinois_ner.sh install-directory
+install/install_neuroner.sh install-directory
 install/install_spacy.sh
 ```
 
@@ -47,30 +47,29 @@ install/install_spacy.sh
 
 ```bash
 chmod a+x install/get_glove_embeddings.sh
-install/get_glove_embeddings.sh <download-directory>
+install/get_glove_embeddings.sh download-directory
 ```
 
-5. If using `SpaCy`, the text file containing the pre-trained word embeddings must have a header as in word2vec's text format, so if it does not (as in GloVe's format), you must add a header. You can use the script `exp/get_glove_shape.py` to get this header. The following 2 lines will copy the embeddings in `<path-output>` and add that header.
+5. If using `SpaCy`, the text file containing the pre-trained word embeddings must have a header as in word2vec's text format, so if it does not (as in GloVe's format), you must add a header. You can use the script `exp/get_glove_shape.py` to get this header. The following 2 lines will copy the embeddings in `path-output` and add that header.
 
 ```bash
-python exp/print_glove_shape.py <path-embeddings> > <path-output>
-cat <path-embeddings> >> <path-output>
-
+python exp/print_glove_shape.py path-embeddings > path-output
+cat path-embeddings >> path-output
 ```
 
 6. If using `SpaCy`, initialize a model containing the pre-trained word embeddings. Note: the parameter `nb-vectors-kept` specifies the number of unique embeddings that the vocabulary is pruned to (-1 for no pruning) -- see [SpaCy's doc](https://spacy.io/api/cli#init-model). 
 
 ```bash
 chmod a+x exp/spacy_init_model.sh
-exp/spacy_init_model.sh <language> <path-embeddings> <nb-vectors-kept> <path-model>
+exp/spacy_init_model.sh language path-embeddings nb-vectors-kept path-model
 ```
 
 7. Test baseline system and `conlleval` evaluation script.
 
 ```bash
-python exp/compute_baseline.py <path-training-file> <path-test-file> <path-output>
+python exp/compute_baseline.py path-training-file path-test-file path-output
 chmod a+x eval/conlleval
-eval/conlleval < <path-output>
+eval/conlleval < path-output
 ```
 
 8. Review the configuration file `exp/test_scripts/exp.cfg`.
@@ -80,7 +79,7 @@ eval/conlleval < <path-output>
 ```bash
 cd exp/test_scripts
 chmod a+x exp_*.sh
-./exp_<system_name>.sh
+./exp_baseline.sh
 ```
 
 The predictions of the system on each test set and the evaluation results will be written in a time-stamped sub-directory. These include the results of the `conlleval` evaluation script, as well as the output of the script `eval/error_analysis.py`. You can also evaluate the predictions using `eval/hard_eval.py`.
