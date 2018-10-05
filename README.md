@@ -58,11 +58,11 @@ cat <path-embeddings> >> <path-output>
 
 ```
 
-6. If using `SpaCy`, initialize a model containing the pre-trained word embeddings. Note: the parameter `nb-vectors-kept` specifies the number of unique embeddings that the vocabulary is pruned to (-1 for no pruning) -- see [SpaCy's doc](https://spacy.io/api/cli#init-model).
+6. If using `SpaCy`, initialize a model containing the pre-trained word embeddings. Note: the parameter `nb-vectors-kept` specifies the number of unique embeddings that the vocabulary is pruned to (-1 for no pruning) -- see [SpaCy's doc](https://spacy.io/api/cli#init-model). 
 
 ```bash
 chmod a+x exp/spacy_init_model.sh
-exp/spacy_init_model.sh <path-embeddings> <nb-vectors-kept> <path-model>
+exp/spacy_init_model.sh <language> <path-embeddings> <nb-vectors-kept> <path-model>
 ```
 
 7. Test baseline system and `conlleval` evaluation script.
