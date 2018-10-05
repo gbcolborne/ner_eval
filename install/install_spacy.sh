@@ -2,14 +2,22 @@
 
 # Installs SpaCY
 print_usage() {
-    echo -e "Usage: $0"
+    echo "Usage: $0 [-cuda9]"
+    echo
+    echo "Options:"
+    echo -e "\t-cuda9: CUDA version is 9.0 rather than 8.0"
 }
 
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     print_usage
     exit 0
 fi
-
+if [[ $1 == "-cuda9" ]]; then
+    # SpaCy assumes CUDA 8.0 by default. If using version 9.0, we have
+    # to set the environment variable CUDA9. See
+    # https://spacy.io/usage/.
+    export CUDA9=1
+fi
 
 # Make sure CUDA_HOME has been set
 if [[ -z "${CUDA_HOME}" ]]; then
