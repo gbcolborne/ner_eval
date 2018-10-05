@@ -11,7 +11,7 @@ Installation and testing scripts are provided for the following systems:
 * [SpaCy](https://spacy.io/)
 * The baseline used for the CoNLL-2003 shared task (see [paper](https://www.aclweb.org/anthology/W03-0419.pdf)).
 
-The systems may be trained and tuned on in-domain data, out-of-domain data or both. See `exp/exp.cfg` for details.
+The systems may be trained and tuned on in-domain data, out-of-domain data or both. See `exp/test_scripts/exp.cfg` for details.
 
 
 ## Requirements
@@ -28,7 +28,7 @@ The systems may be trained and tuned on in-domain data, out-of-domain data or bo
 
 To install and test one or more NER systems, do the following:
 
-1. Obtain and prepare datasets. Datasets must be text files containing 2 whitespace-separated columns, with tokens in the first and labels in the second, and with empty lines between sentences. Labels should be encoded using [BIO-2](https://en.wikipedia.org/wiki/Inside%E2%80%93outside%E2%80%93beginning_(tagging)) format.  Dataset names must match a specific pattern, as explained in `exp/exp.cfg`. The directory `data_utils` contains various scripts used to preprocess, analyze, and transform datasets.
+1. Obtain and prepare datasets. Datasets must be text files containing 2 whitespace-separated columns, with tokens in the first and labels in the second, and with empty lines between sentences. Labels should be encoded using [BIO-2](https://en.wikipedia.org/wiki/Inside%E2%80%93outside%E2%80%93beginning_(tagging)) format.  Dataset names must match a specific pattern, as explained in `exp/test_scripts/exp.cfg`. The directory `data_utils` contains various scripts used to preprocess, analyze, and transform datasets.
 
 2. Install systems you would like to evaluate. You might want to review the installation scripts first. Note: if you install `NeuroNER`, make sure your default Python interpreter uses Python 3 (you can use a virtual environment if you don't want to change your system's default interpreter). 
 
