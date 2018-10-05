@@ -2,10 +2,10 @@
 
 # Installs CRF++
 print_usage() {
-    echo -e "Usage: $0 [install-directory]"
+    echo "Usage: $0 [install-directory]"
     echo
     echo "Args:"
-    echo -e "\t-install-directory"
+    echo "  -install-directory"
 }
 
 if [ "$#" -ne 1 ]; then

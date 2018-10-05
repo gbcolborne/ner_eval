@@ -25,7 +25,8 @@ trainModel() {
 
 # Loop over test sets
 for data_name in $test_dnames; do
-    echo -e "\nRunning test on $data_name..."
+    echo
+    echo "Running test on $data_name..."
     prepareData $data_name
     path_pred=$dir_results/$data_name.pred.txt
 
@@ -53,5 +54,6 @@ for data_name in $test_dnames; do
     python $dir_ner_eval/eval/error_analysis.py -e BIO-2 $path_pred > $path_err
     echo "Test on $data_name completed."
 done
-	
-echo -e "\nResults written in $dir_results"
+
+echo	
+echo "Results written in $dir_results"

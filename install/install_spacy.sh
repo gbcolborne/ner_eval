@@ -5,7 +5,7 @@ print_usage() {
     echo "Usage: $0 [-cuda9]"
     echo
     echo "Options:"
-    echo -e "\t-cuda9: CUDA version is 9.0 rather than 8.0"
+    echo "  -cuda9: CUDA version is 9.0 rather than 8.0"
 }
 
 if [[ $1 == "-h" || $1 == "--help" ]]; then

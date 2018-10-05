@@ -4,10 +4,10 @@
 # https://github.com/Franck-Dernoncourt/NeuroNER/blob/master/install_ubuntu.sh)
 
 print_usage() {
-    echo -e "Usage: $0 [install-directory]"
+    echo "Usage: $0 [install-directory]"
     echo
     echo "Args:"
-    echo -e "\t-install-directory"
+    echo "  -install-directory"
 }
 
 if [ "$#" -ne 1 ]; then

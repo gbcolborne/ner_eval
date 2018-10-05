@@ -5,11 +5,11 @@
 
 
 print_usage() {
-    echo -e "Usage: $0 [path-data path-output]"
+    echo "Usage: $0 [path-data path-output]"
     echo
     echo "Args:"
-    echo -e "\t-path-data path of dir containing a file ontonotes.<name>.train.iob for each of the following domain names: bc, bn, mz, nw, tc, wb"
-    echo -e "\t-path-output path of dir where out-of-domain training sets will be written"
+    echo "  -path-data path of dir containing a file ontonotes.<name>.train.iob for each of the following domain names: bc, bn, mz, nw, tc, wb"
+    echo "  -path-output path of dir where out-of-domain training sets will be written"
 }
 
 if [[ $1 == "-h" || $1 == "--help" ]]; then

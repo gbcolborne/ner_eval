@@ -3,13 +3,13 @@
 # Initializes a SpaCy model using pre-trained word embeddings
 
 print_usage() {
-    echo -e "Usage: $0 [language path-embeddings nb-words-kept path-model]"
+    echo "Usage: $0 [language path-embeddings nb-words-kept path-model]"
     echo
     echo "Args:"
-    echo -e "\t-language: code of a language supported by SpaCy (e.g. en, fr, es, it, etc.)."
-    echo -e "\t-path-embeddings: path of word embeddings in word2vec text format"
-    echo -e "\t-nb-words-kept: nb unique embeddings the vocab is pruned to (-1 for no pruning)"
-    echo -e "\t-path-model: path where model will be written"
+    echo "  -language: code of a language supported by SpaCy (e.g. en, fr, es, it, etc.)"
+    echo "  -path-embeddings: path of word embeddings in word2vec text format"
+    echo "  -nb-words-kept: nb unique embeddings the vocab is pruned to (-1 for no pruning)"
+    echo "  -path-model: path where model will be written"
     
 }
 

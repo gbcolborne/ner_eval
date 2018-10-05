@@ -3,10 +3,10 @@
 # Download some GloVe embeddings
 
 print_usage() {
-    echo -e "Usage: $0 download-directory"
+    echo "Usage: $0 download-directory"
     echo
     echo "Args:"
-    echo -e "\t-download-directory"
+    echo "  -download-directory"
 }
 
 if [ "$#" -ne 1 ]; then
