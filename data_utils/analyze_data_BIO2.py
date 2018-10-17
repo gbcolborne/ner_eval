@@ -1,6 +1,6 @@
 import os, sys, argparse
 sys.path.append(os.path.dirname(__file__)+"/..")
-from data_utils import get_mentions_from_BIO_file
+from data_utils import get_mentions_from_BIO_file, count_tokens_and_sents
 
 doc = """Count and analyze entity mentions in an NER dataset in column
 text format (tokens in the first column, BIO-2 labels in the last
@@ -14,6 +14,11 @@ parser.add_argument('path')
 parser.add_argument('-i', '--ignore_boundaries', action="store_true", help="Ignore sentence boundaries")
 args = parser.parse_args()
 path = os.path.abspath(args.path)
+
+# Count tokens and sentences
+nb_tokens, nb_sents = count_tokens_and_sents(args.path)
+print("Nb sentences: {}".format(nb_sents))
+print("Nb tokens: {}".format(nb_tokens))
 
 # Get entity mentions
 mentions = get_mentions_from_BIO_file(path, encoding="BIO-2", label_col=-1, 
