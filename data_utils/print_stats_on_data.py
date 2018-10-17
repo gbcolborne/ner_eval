@@ -1,5 +1,5 @@
 import sys, os, argparse
-from data_utils import get_mentions_from_BIO_file
+from data_utils import get_mentions_from_BIO_file, count_tokens_and_sents
 
 doc = """ Print some info on an NER dataset in column text format
     (tokens in the first column, BIO-1 or BIO-2 labels in the last
@@ -33,23 +33,8 @@ etypes = set()
 for (mention, etype) in mentions:
     etypes.add(etype)
 
-# Get number of sents
-nb_sents = 0
-with open(args.input) as f:
-    sent = []
-    for line in f:
-        elems = line.strip().split()
-        if len(elems):
-            sent.append(elems[0])
-        else:
-            # We have an empty line
-            if len(sent):
-                if not len(sent) == 1 or not sent[0] == "-DOCSTART-":
-                    nb_sents += 1
-                sent = []
-# If there is no empty line at the end of the file, we have not counted the last sentence.
-if len(sent):
-    nb_sents += 1
+# Get number of sentences
+_, nb_sents = count_tokens_and_sents(args.input)
 
 # Print stats
 msg = "Stats on {} -> ".format(os.path.basename(args.input))
