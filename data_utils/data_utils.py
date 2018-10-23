@@ -1,4 +1,26 @@
 
+def stream_sents(path):
+    """Given the path of a text file containing one token per line and
+    empty lines between sentences, stream sentences. A sentence is a
+    list containing, for each line, the content of that line minus any
+    trailing whitespace (including line break).
+
+    """
+    with open(path) as f:
+        sent = []
+        for line in f:
+            line = line.strip()
+            if len(line):
+                sent.append(line)
+            else:
+                # We have an empty line
+                if len(sent):
+                    yield sent
+                    sent = []    
+    # Catch last set if there is no empty line at the end of the file
+    if len(sent):
+        yield sent
+    
 def count_tokens_and_sents(path):
     """Given the path of a text file containing one token per line and
     empty lines between sentences, count tokens and sentences. Note:
@@ -14,24 +36,10 @@ def count_tokens_and_sents(path):
     """
     nb_tokens = 0
     nb_sents = 0
-    with open(path) as f:
-        sent = []
-        for line in f:
-            line = line.strip()
-            if len(line):
-                sent.append(line)
-            else:
-                # We have an empty line
-                if len(sent):
-                    if not len(sent) == 1 or not sent[0].split()[0] == "-DOCSTART-":
-                        nb_sents += 1
-                        nb_tokens += len(sent)
-                    sent = []
-    # If there is no empty line at the end of the file, we have not
-    # counted the last sentence.
-    if len(sent):
-        nb_sents += 1
-        nb_tokens += len(sent)
+    for sent in stream_sents(path):
+        if not len(sent) == 1 or not sent[0].split()[0] == "-DOCSTART-":
+            nb_sents += 1
+            nb_tokens += len(sent)
     return nb_tokens, nb_sents
 
 
