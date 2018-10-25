@@ -197,6 +197,19 @@ for sample_size in sample_sizes:
 
 
 
+
+# Make box plot of f-scores (at globally best epoch) with respect to
+# sample size
+flierprops = {"alpha":0.1, "markerfacecolor":"w", "fillstyle":"none"}
+plt.boxplot([f_scores_by_sample_size[size] for size in sample_sizes], flierprops=flierprops)
+xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
+plt.xticks(range(1,len(sample_sizes)+1), xtick_labels)
+plt.axhline(f_score_dev, linewidth=1, color='k', linestyle="--", label="dev f-score")
+plt.xlabel("Resample size (fraction of total dev set size)")
+plt.ylabel("F-score")
+#plt.legend()
+plt.show()
+
 # Plot confidence interval of f-score (at globally best epoch) with
 # respect to sample size
 f_score_err_pos = [f-f_score_dev for f in f_score_up_lims]
@@ -210,15 +223,13 @@ plt.xlabel("Resample size (fraction of total dev set size)")
 plt.ylabel("F-score")
 plt.show()
 
-# Make box plot of f-scores (at globally best epoch) with respect to
-# sample size
-plt.boxplot([f_scores_by_sample_size[size] for size in sample_sizes])
+# Make box plot of best epochs with respect to sample size
+plt.boxplot([best_epochs_by_sample_size[size] for size in sample_sizes], flierprops=flierprops)
 xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
-plt.xticks(range(1,len(sample_sizes)+1), xtick_labels)
-plt.axhline(f_score_dev, linewidth=1, color='k', linestyle="--", label="dev f-score")
+plt.xticks(range(1,len(sample_size_ratios)+1), xtick_labels)
+plt.axhline(best_epoch, linewidth=1, color='k', linestyle=":")
 plt.xlabel("Resample size (fraction of total dev set size)")
-plt.ylabel("F-score")
-#plt.legend()
+plt.ylabel("Best epoch")
 plt.show()
 
 # Plot confidence interval of best epoch with respect to sample size
@@ -229,15 +240,6 @@ plt.axhline(best_epoch, linewidth=1, color='k', linestyle=":")
 plt.xscale("log", basex=2)
 xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
 plt.xticks(sample_size_ratios, xtick_labels)
-plt.xlabel("Resample size (fraction of total dev set size)")
-plt.ylabel("Best epoch")
-plt.show()
-
-# Make box plot of best epochs with respect to sample size
-plt.boxplot([best_epochs_by_sample_size[size] for size in sample_sizes])
-xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
-plt.xticks(range(1,len(sample_size_ratios)+1), xtick_labels)
-plt.axhline(best_epoch, linewidth=1, color='k', linestyle=":")
 plt.xlabel("Resample size (fraction of total dev set size)")
 plt.ylabel("Best epoch")
 plt.show()
