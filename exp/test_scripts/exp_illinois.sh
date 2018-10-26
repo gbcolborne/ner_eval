@@ -84,7 +84,7 @@ for data_name in $test_dnames; do
     # and out-of-domain data, for example -- see the checkConfig
     # function for more details), we only need to train one model for
     # all test sets.
-    if [ $train_set_static -eq 0 ] || [ $dev_set_static -eq 0 ] || [ -z $path_model ] ; then
+    if [ $train_set_static -eq 0 ] || [ $dev_set_static -eq 0 ] || [ -z $path_config ] ; then
 	echo "Training model on $path_train, using $path_dev for validation..."
 	path_config=$scratch/$data_name.properties
 	trainModel $path_config $data_name $path_train $path_dev
