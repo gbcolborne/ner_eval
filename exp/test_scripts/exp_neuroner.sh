@@ -78,7 +78,7 @@ for data_name in $test_dnames; do
 
     # Train model and save predictions and evaluation results.
     echo "Training model on $path_train, using $path_dev for validation..."
-    path_model=$scratch/$model-$data_name
+    path_model=$scratch/model-$data_name
     trainModel $path_train $path_dev $path_test $path_pred $data_name.results.json
 
     # Evaluate predictions

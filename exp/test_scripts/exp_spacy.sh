@@ -61,7 +61,7 @@ for data_name in $test_dnames; do
     # all test sets.
     if [ $train_set_static -eq 0 ] || [ $dev_set_static -eq 0 ] || [ -z $path_model ] ; then
 	echo "Training model on $path_train, using $path_dev for validation..."
-	path_model=$scratch/$model-$data_name
+	path_model=$scratch/model-$data_name
 	trainModel $path_train $path_dev $path_model
     fi
 
