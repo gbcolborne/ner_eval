@@ -135,15 +135,13 @@ sentence_ids = list(range(nb_sents))
 nb_resamples = 20000
 sample_size_ratios = [2**-7, 2**-6, 2**-5, 2**-4, 2**-3, 2**-2, 2**-1, 2**0]
 sample_sizes = [int(ratio*nb_sents) for ratio in sample_size_ratios]
-conf_level = 90
-low_pctl = (100-conf_level)//2
-high_pctl = 100-(100-conf_level)//2
+conf_levels = [80,90,95]
 f_scores_by_sample_size = {}
 best_epochs_by_sample_size = {}
-f_score_low_lims = []
-f_score_up_lims = []
-epoch_low_lims = []
-epoch_up_lims = []
+f_score_low_lims = {x:[] for x in conf_levels}
+f_score_up_lims = {x:[] for x in conf_levels}
+epoch_low_lims = {x:[] for x in conf_levels}
+epoch_up_lims = {x:[] for x in conf_levels}
 for sample_size in sample_sizes:
     f_scores = []
     best_epochs = []
@@ -176,32 +174,34 @@ for sample_size in sample_sizes:
     f_scores_by_sample_size[sample_size] = f_scores
     best_epochs_by_sample_size[sample_size] = best_epochs
 
-    # Compute percentile confidence intervals
-    f_score_low_lim = np.percentile(f_scores, low_pctl, interpolation="midpoint")
-    f_score_up_lim = np.percentile(f_scores, high_pctl, interpolation="midpoint")
-    f_score_low_lims.append(f_score_low_lim)
-    f_score_up_lims.append(f_score_up_lim)
-    epoch_low_lim = np.percentile(best_epochs, low_pctl, interpolation="midpoint")
-    epoch_up_lim = np.percentile(best_epochs, high_pctl, interpolation="midpoint")
-    epoch_low_lims.append(epoch_low_lim)
-    epoch_up_lims.append(epoch_up_lim)
-
-    # Print results for this sample size
     print("\nResults for sample size={}".format(sample_size))
-    msg = "{}% conf. interval of f-score at globally best epoch ({}):".format(conf_level, best_epoch) 
-    msg += " [{:.4f},{:.4f}]".format(f_score_low_lim, f_score_up_lim)
-    print(msg)
-    msg = "{}% conf. interval of best epoch:".format(conf_level) 
-    msg += " [{},{}]".format(epoch_low_lim, epoch_up_lim)
-    print(msg)
+    for conf_level in conf_levels:
+        low_pctl = (100-conf_level)//2
+        high_pctl = 100-(100-conf_level)//2
 
+        # Compute percentile confidence intervals
+        f_score_low_lim = np.percentile(f_scores, low_pctl, interpolation="midpoint")
+        f_score_up_lim = np.percentile(f_scores, high_pctl, interpolation="midpoint")
+        f_score_low_lims[conf_level].append(f_score_low_lim)
+        f_score_up_lims[conf_level].append(f_score_up_lim)
+        epoch_low_lim = np.percentile(best_epochs, low_pctl, interpolation="midpoint")
+        epoch_up_lim = np.percentile(best_epochs, high_pctl, interpolation="midpoint")
+        epoch_low_lims[conf_level].append(epoch_low_lim)
+        epoch_up_lims[conf_level].append(epoch_up_lim)
 
+        # Print confidence intervals for this confidence level
+        msg = "{}% conf. interval of f-score at globally best epoch ({}):".format(conf_level, best_epoch) 
+        msg += " [{:.4f},{:.4f}]".format(f_score_low_lim, f_score_up_lim)
+        print(msg)
+        msg = "{}% conf. interval of best epoch:".format(conf_level) 
+        msg += " [{},{}]".format(epoch_low_lim, epoch_up_lim)
+        print(msg)
 
 
 # Make box plot of f-scores (at globally best epoch) with respect to
 # sample size
 flierprops = {"alpha":0.1, "markerfacecolor":"w", "fillstyle":"none"}
-plt.boxplot([f_scores_by_sample_size[size] for size in sample_sizes], flierprops=flierprops)
+plt.boxplot([f_scores_by_sample_size[size] for size in sample_sizes], flierprops=flierprops, showmeans=True)
 xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
 plt.xticks(range(1,len(sample_sizes)+1), xtick_labels)
 plt.axhline(f_score_dev, linewidth=1, color='k', linestyle="--", label="dev f-score")
@@ -212,19 +212,20 @@ plt.show()
 
 # Plot confidence interval of f-score (at globally best epoch) with
 # respect to sample size
-f_score_err_pos = [f-f_score_dev for f in f_score_up_lims]
-f_score_err_neg = [f_score_dev-f for f in f_score_low_lims]
-plt.errorbar(sample_size_ratios, [f_score_dev]*len(sample_size_ratios), yerr=[f_score_err_neg, f_score_err_pos], fmt="none", ecolor="k", capsize=3, capthick=1)
-plt.axhline(f_score_dev, linewidth=1, color='k', linestyle=":")
-plt.xscale("log", basex=2)
-xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
-plt.xticks(sample_size_ratios, xtick_labels)
-plt.xlabel("Resample size (fraction of total dev set size)")
-plt.ylabel("F-score")
-plt.show()
+for conf_level in conf_levels:
+    f_score_err_pos = [f-f_score_dev for f in f_score_up_lims[conf_level]]
+    f_score_err_neg = [f_score_dev-f for f in f_score_low_lims[conf_level]]
+    plt.errorbar(sample_size_ratios, [f_score_dev]*len(sample_size_ratios), yerr=[f_score_err_neg, f_score_err_pos], fmt="none", ecolor="k", capsize=3, capthick=1)
+    plt.axhline(f_score_dev, linewidth=1, color='k', linestyle=":")
+    plt.xscale("log", basex=2)
+    xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
+    plt.xticks(sample_size_ratios, xtick_labels)
+    plt.xlabel("Resample size (fraction of total dev set size)")
+    plt.ylabel("F-score ({}% confidence interval)".format(conf_level))
+    plt.show()
 
 # Make box plot of best epochs with respect to sample size
-plt.boxplot([best_epochs_by_sample_size[size] for size in sample_sizes], flierprops=flierprops)
+plt.boxplot([best_epochs_by_sample_size[size] for size in sample_sizes], flierprops=flierprops, showmeans=True)
 xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
 plt.xticks(range(1,len(sample_size_ratios)+1), xtick_labels)
 plt.axhline(best_epoch, linewidth=1, color='k', linestyle=":")
@@ -233,14 +234,15 @@ plt.ylabel("Best epoch")
 plt.show()
 
 # Plot confidence interval of best epoch with respect to sample size
-epoch_err_pos = [e-best_epoch for e in epoch_up_lims]
-epoch_err_neg = [best_epoch-e for e in epoch_low_lims]
-plt.errorbar(sample_size_ratios, [best_epoch]*len(sample_size_ratios), yerr=[epoch_err_neg, epoch_err_pos], fmt="none", ecolor="k", capsize=3, capthick=1)
-plt.axhline(best_epoch, linewidth=1, color='k', linestyle=":")
-plt.xscale("log", basex=2)
-xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
-plt.xticks(sample_size_ratios, xtick_labels)
-plt.xlabel("Resample size (fraction of total dev set size)")
-plt.ylabel("Best epoch")
-plt.show()
+for conf_level in conf_levels:
+    epoch_err_pos = [e-best_epoch for e in epoch_up_lims[conf_level]]
+    epoch_err_neg = [best_epoch-e for e in epoch_low_lims[conf_level]]
+    plt.errorbar(sample_size_ratios, [best_epoch]*len(sample_size_ratios), yerr=[epoch_err_neg, epoch_err_pos], fmt="none", ecolor="k", capsize=3, capthick=1)
+    plt.axhline(best_epoch, linewidth=1, color='k', linestyle=":")
+    plt.xscale("log", basex=2)
+    xtick_labels = ["1/{}".format(int(2**-math.log(ratio, 2))) for ratio in sample_size_ratios]
+    plt.xticks(sample_size_ratios, xtick_labels)
+    plt.xlabel("Resample size (fraction of total dev set size)")
+    plt.ylabel("Best epoch ({}% confidence interval)".format(conf_level))
+    plt.show()
 
