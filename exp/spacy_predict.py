@@ -12,7 +12,7 @@ containing the predicted labels in BIO-2 format."""
 def add_predictions(nlp, sent):
     """ Given a SpaCy model (nlp) and a sentence (list of lines
     containing whitespace separated columns of text, with the token in
-    the first column, predict NER labels and a column containing the
+    the first column), predict NER labels and a column containing the
     predicted labels in BIO-2 format. """
     rows = []
     for line in sent:
