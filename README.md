@@ -13,6 +13,8 @@ Installation and testing scripts are provided for the following systems:
 
 The systems may be trained and tuned on in-domain data, out-of-domain data or both. See `exp/test_scripts/exp.cfg` for details.
 
+Some information on this project can be found in the slides (PDF file) in this directory.
+
 
 ## Requirements
 
