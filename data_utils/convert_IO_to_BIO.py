@@ -25,6 +25,10 @@ with open(args.input) as f_in, open(args.output, "w") as f_out:
                 # Mark this token as not part of a mention
                 inside = False
             else:
+                # Strip I prefix
+                if label[:2] == "I-":
+                    label = label[2:]
+                # Check if we are inside a mention
                 if inside and label == prev_label:
                     # This token is within a mention, but is not the
                     # first token of that mention.
