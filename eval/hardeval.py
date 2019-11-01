@@ -297,7 +297,7 @@ to_eval.append((keep_diff_O, eval_name))
 # Write IO prefix frequencies in training set for seen test words
 # (excluding "O")
 if args.write_dir:
-    header = ["Word", "I", "O"]
+    header = ["Word", "Count", "I", "O"]
     io_info = []
     for word in test_vocab.intersection(train_vocab):
         io_fd = {}
@@ -340,7 +340,7 @@ to_eval.append((keep_diff_etype, eval_name))
 # Write entity type frequencies in training set for seen test words
 # (excluding "O")
 if args.write_dir:
-    header = ["Word"] + list(set(train_etypes_I))
+    header = ["Word", "Count"] + list(set(train_etypes_I))
     etype_info = []
     for word in test_vocab.intersection(word_etype_count.keys()):
         etype_fd = word_etype_count[word]
