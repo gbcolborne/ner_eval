@@ -8,7 +8,10 @@ from collections import defaultdict, Counter
 import numpy as np
 
 doc="""Given NER predictions and training data, compute token error rate
-on various subsets of tokens."""
+on various subsets of tokens. 
+
+WARNING: labels must be in BIO-2 format.
+"""
 
 # Valid ASCII characters (not including whitespace)
 VALID_CHARS = string.ascii_letters + string.digits + string.punctuation
@@ -162,12 +165,12 @@ msg = ("(optional) path of directory in which we write a vocab file and "
        "evaluation file for each subset of tokens")
 parser.add_argument("-w", "--write-dir", required=False, help=msg)
 msg = ("Path of training data (text file containing whitespace-separate "
-       "columns, with tokens in the first column, and gold labels in the last "
+       "columns, with tokens in the first column, and gold BIO-2 labels in the last "
        "column).")
 parser.add_argument("train", help=msg)
 msg = ("Path of predictions (text file containing whitespace-separate "
        "columns, with tokens in the first column, and gold and predicted "
-       "labels in the last 2 columns).")
+       "BIO-2 labels in the last 2 columns).")
 parser.add_argument("pred", help=msg)
 args = parser.parse_args()
 
