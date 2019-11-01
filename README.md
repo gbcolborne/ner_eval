@@ -84,6 +84,6 @@ chmod a+x exp_*.sh
 ./exp_baseline.sh
 ```
 
-The predictions of the system on each test set and the evaluation results will be written in a time-stamped sub-directory. These include the results of the `conlleval` evaluation script, as well as the output of the script `eval/error_analysis.py`. You can also evaluate the predictions using `eval/hard_eval.py`.
+The predictions of the system on each test set and the evaluation results will be written in a time-stamped sub-directory. These include the results of the `conlleval` evaluation script, as well as the output of the script `eval/error_analysis.py`. You can also evaluate the predictions using `eval/hardeval.py`.
 
 You can copy the `test_scripts` directory elsewhere, modify the configuration file, and run the tests there if you want, e.g. if you want to create different directories for different experimental configurations (e.g. whether you train in-domain or out-of-domain).
