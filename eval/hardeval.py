@@ -42,15 +42,35 @@ def unicode_to_ASCII(s):
     )
     return norm        
 
-
+def enforce_valid_bio2_labeling(labels):
+    prev_prefix = 'O'
+    prev_etype = None
+    for label in labels:
+        if label == 'O':
+            etype = None
+        else:
+            etype = label[2:]
+        prefix = label[0]
+        if prefix == 'I':
+            if prev_prefix == 'O':
+                msg = 'Invalid BIO-2 labeling: I follows O'
+                raise ValueError(msg)
+            if etype != prev_etype:
+                print(labels)
+                msg = 'Invalid BIO-2 labeling: I follows label with different entity type'
+                raise ValueError(msg)
+        prev_prefix = prefix
+        prev_etype = etype
+                
 def get_bio2_mention_offsets(labels):
     """Given a list of BIO-2 labels, find mention boundaries, yield a
     (start offset, end offset) tuple for each mention.
 
     """
-    prefixes = [x[0] for x in labels]
+
     # Pad labels with an extra O at the end to avoid going out of
     # bounds when we look for the end offset of the mentons we find
+    prefixes = [x[0] for x in labels]
     prefixes.append("O")
     i = 0
     while i < len(labels):
@@ -218,6 +238,11 @@ print("Nb tokens in training set: {}".format(len(train_tokens)))
 # Store vocabs
 train_vocab = set(train_tokens)
 test_vocab = set(test_tokens)
+
+# Enforce valid BIO-2 labeling
+enforce_valid_bio2_labeling(train_gold_bio)
+enforce_valid_bio2_labeling(test_gold_bio)
+#enforce_valid_bio2_labeling(test_pred_bio)
 
 # Convert label encoding from BIO-2 to BILOU
 train_gold_bilou = convert_bio2_to_bilou(train_gold_bio)
