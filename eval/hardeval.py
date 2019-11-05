@@ -322,15 +322,16 @@ to_eval.append((keep_diff_O, eval_name))
 # Write IO prefix frequencies in training set for seen test words
 # (excluding "O")
 if args.write_dir:
-    header = ["Word", "Count", "I", "O"]
+    keys = ["I", "O"]
     io_info = []
     for word in test_vocab.intersection(train_vocab):
         io_fd = {}
         if word in word_io_count:
             io_fd = word_io_count[word]
-        io_info.append([word] + [str(io_fd[t]) if t in io_fd else "0" for t in header])
+        io_info.append([word] + [str(io_fd[k]) if k in io_fd else "0" for k in keys])
     io_info = sorted(io_info, key=lambda x:x[0])
     path = "{}/class_freqs_for_seen_words_IO.tsv".format(args.write_dir)
+    header = ["Word"] + keys
     write_table(io_info, path, header=header, delim="\t")
 
 
@@ -365,13 +366,14 @@ to_eval.append((keep_diff_etype, eval_name))
 # Write entity type frequencies in training set for seen test words
 # (excluding "O")
 if args.write_dir:
-    header = ["Word", "Count"] + list(set(train_etypes_I))
+    keys = list(set(train_etypes_I))
     etype_info = []
     for word in test_vocab.intersection(word_etype_count.keys()):
         etype_fd = word_etype_count[word]
-        etype_info.append([word] + [str(etype_fd[t]) if t in etype_fd else "0" for t in header])
+        etype_info.append([word] + [str(etype_fd[k]) if k in etype_fd else "0" for k in keys])
     etype_info = sorted(etype_info, key=lambda x:x[0])
     path = "{}/class_freqs_for_seen_words_etype.tsv".format(args.write_dir)
+    header = ["Word"] + keys
     write_table(etype_info, path, header=header, delim="\t")
 
 # Combine the unseen and diff indices
