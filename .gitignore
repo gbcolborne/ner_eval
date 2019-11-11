@@ -11,4 +11,4 @@ __pycache__
 *.dropbox.attr
 
 # Mac stuff
-*/.DS_Store/
+*/.DS_Store
