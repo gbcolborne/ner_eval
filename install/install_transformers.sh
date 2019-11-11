@@ -13,8 +13,9 @@ if [[ $1 == "-h" || $1 == "--help" ]]; then
 fi
 
 # Install PyTorch and Transformers
-conda install pytorch==1.0.0 torchvision==0.2.1 cuda80 -c pytorch
+conda install pytorch==1.2.0 torchvision==0.4.0 cudatoolkit=10.0 -c pytorch
 pip install transformers==2.1.1
 
 # Install dependencies for run_transformer_ner.py script
-pip install seqeval==0.0.12 tensorboardX==1.9
+pip install seqeval==0.0.12 
+pip install tensorboardX==1.9
