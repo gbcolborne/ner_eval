@@ -16,3 +16,5 @@ fi
 conda install pytorch==1.0.0 torchvision==0.2.1 cuda80 -c pytorch
 pip install transformers==2.1.1
 
+# Install dependencies for run_transformer_ner.py script
+pip install seqeval==0.0.12 tensorboardX==1.9
