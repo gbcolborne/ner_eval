@@ -9,3 +9,6 @@ __pycache__
 
 # Dropbox attribute files
 *.dropbox.attr
+
+# Mac stuff
+DS_Store/
