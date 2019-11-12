@@ -368,9 +368,12 @@ def train(args, train_dataset, model, tokenizer, labels, pad_token_label_id):
         if args.max_steps > 0 and global_step > args.max_steps:
             train_iterator.close()
             break
+    path_tb = os.path.join(args.output_dir, "tensorboard_results.json")
+    tb_writer.export_scalars_to_json.(path_tb)
 
     if args.local_rank in [-1, 0]:
         tb_writer.close()
+
 
     return global_step, tr_loss / global_step
 
