@@ -12,6 +12,7 @@ setTraps
 mkdirResults
 
 bert_cfg_name="bert-base-cased" 
+num_train_epochs=5.0
 
 # Fine-tune model using pre-trained BERT model. Save model at best epoch.
 # Input:
@@ -31,7 +32,7 @@ trainModel() {
     python ${dir_ner_eval}/data_utils/print_labels_in_data.py $1 > ${scratch}/data/labels.txt
 
     # Prepare to train model  
-    train_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $bert_cfg_name --output_dir ${scratch}/output --overwrite_output_dir --labels ${scratch}/data/labels.txt --cache_dir $4 --do_train --do_eval --evaluate_during_training"
+    train_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $bert_cfg_name --output_dir ${scratch}/output --labels ${scratch}/data/labels.txt --cache_dir $4 --do_train --do_eval --num_train_epochs ${num_train_epochs}"
     # lower-case if model is uncased
     if [[ $bert_cfg_name =~ "uncased" ]]; then
         train_cmd="${train_cmd} --do_lower_case"
@@ -52,15 +53,15 @@ trainModel() {
 # Input:
 # $1 - path of model directory (must also contain a file called labels.txt, containing all the unique labels in the training set)
 # $2 - path of test set
-# $3 - path where we write the predictions
+# $3 - path where we write predictions
 testModel() {
-    mkdir $scratch/data $scratch/output
+    mkdir $scratch/data 
 
-    # Copy data (they need to be named test.txt
+    # Copy data (they need to be named test.txt)
     cp $2 ${scratch}/data/test.txt
 
     # Prepare command for evaluation
-    test_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $1 --output_dir ${scratch}/output --labels $1/labels.txt --do_predict"
+    test_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $1 --output_dir $1 --labels $1/labels.txt --do_predict"
     # lower-case if model is uncased
     if [[ $bert_cfg_name =~ "uncased" ]]; then
         test_cmd="${test_cmd} --do_lower_case"
@@ -68,10 +69,10 @@ testModel() {
     eval test_cmd
 
     # Save predictions
-    mv ${scratch}/output/test_predictions.txt $3
+    mv $1/test_predictions.txt $3
 
     # Clean up
-    rm -rf ${scratch}/data ${scratch}/output
+    rm -rf ${scratch}/data
 }
 
 
