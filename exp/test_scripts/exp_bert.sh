@@ -11,7 +11,7 @@ mkdirScratch $system_name $dir_tmp
 setTraps
 mkdirResults
 
-bert_cfg_name="bert-base-uncased" 
+bert_cfg_name="bert-base-cased" 
 
 # Fine-tune model using pre-trained BERT model. Save model at best epoch.
 # Input:
