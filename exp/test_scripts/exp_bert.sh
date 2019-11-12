@@ -31,7 +31,7 @@ trainModel() {
     python ${dir_ner_eval}/data_utils/print_labels_in_data.py $1 > ${scratch}/data/labels.txt
 
     # Prepare to train model  
-    train_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $bert_cfg_name --output_dir ${scratch}/output --overwrite_output_dir --labels ${scratch}/data/labels.txt --cache_dir $4 --do_train --do_eval"
+    train_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $bert_cfg_name --output_dir ${scratch}/output --overwrite_output_dir --labels ${scratch}/data/labels.txt --cache_dir $4 --do_train --do_eval --evaluate_during_training"
     # lower-case if model is uncased
     if [[ $bert_cfg_name =~ "uncased" ]]; then
         train_cmd="${train_cmd} --do_lower_case"
