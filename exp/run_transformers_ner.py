@@ -369,7 +369,7 @@ def train(args, train_dataset, model, tokenizer, labels, pad_token_label_id):
             train_iterator.close()
             break
     path_tb = os.path.join(args.output_dir, "tensorboard_results.json")
-    tb_writer.export_scalars_to_json.(path_tb)
+    tb_writer.export_scalars_to_json(path_tb)
 
     if args.local_rank in [-1, 0]:
         tb_writer.close()
