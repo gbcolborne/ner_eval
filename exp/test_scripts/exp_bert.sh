@@ -60,7 +60,7 @@ testModel() {
     cp $2 ${scratch}/data/test.txt
 
     # Prepare command for evaluation
-    test_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $1 --output_dir ${scratch}/output --overwrite_output_dir --labels $1/labels.txt --do_predict"
+    test_cmd="python ${dir_ner_eval}/exp/run_transformers_ner.py --data_dir ${scratch}/data --model_type bert --model_name_or_path $1 --output_dir ${scratch}/output --labels $1/labels.txt --do_predict"
     # lower-case if model is uncased
     if [[ $bert_cfg_name =~ "uncased" ]]; then
         test_cmd="${test_cmd} --do_lower_case"
