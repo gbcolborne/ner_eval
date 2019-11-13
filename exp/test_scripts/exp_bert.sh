@@ -78,6 +78,7 @@ testModel() {
 
 # Set cache directory for downloaded pre-trained models
 dir_cache=${scratch}/cache_pretrained_models
+mkdir $dir_cache
 
 # Loop over test sets
 for data_name in $test_dnames; do
