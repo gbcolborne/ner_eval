@@ -66,7 +66,7 @@ testModel() {
     if [[ $bert_cfg_name =~ "uncased" ]]; then
         test_cmd="${test_cmd} --do_lower_case"
     fi
-    eval test_cmd
+    eval $test_cmd
 
     # Save predictions
     python ${dir_ner_eval}/exp/merge_bert_pred.py ${scratch}/data/test.txt $1/test_predictions.txt $3
