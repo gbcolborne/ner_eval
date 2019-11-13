@@ -29,13 +29,25 @@ sents_pred = stream_sents(args.path_predictions)
 
 with open(args.path_output, 'w') as f:
   for sent,pred in zip(sents_input, sents_pred):
+    tokens = []
+    gold_labels = []
+    for line in sent:
+      elems = line.split(" ")
+      token = elems[0]
+      label = elems[1]
+      tokens.append(token)
+      gold_labels.append(label)
+    pred_labels = []
+    for i,line in enumerate(pred):
+      elems = line.split(" ")
+      token = elems[0]
+      label = elems[-1]
+      pred_labels.append(label)
+      if token != tokens[i]:
+        print("Warning: token mismatch: {} != {}".format(token, tokens[i]))
     if len(sent) > len(pred):
       print("Warning: found an input sentence with {} tokens but {} predictions".format(len(sent), len(pred)))
-    out = sent
-    pred_labels = [line.split(" ")[-1] for line in pred]
-    for i in range(len(sent)):
-      if i < len(pred_labels):
-        out[i] += " " + pred_labels[i]
-      else:
-        out[1] += " O"
-    f.write("\n".join(out)+"\n") 
+      pred_labels += ['O' for _ in range(len(sent)-len(pred))]
+    for t,g,p in zip(tokens,gold_labels,pred_labels):
+      f.write("{} {} {}\n".format(t,g,p)) 
+    f.write("\n")
