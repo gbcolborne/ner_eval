@@ -69,7 +69,7 @@ testModel() {
     eval test_cmd
 
     # Save predictions
-    mv $1/test_predictions.txt $3
+    python ${dir_ner_eval}/exp/merge_bert_pred.py ${scratch}/data/test.txt $1/test_predictions.txt $3
 
     # Clean up
     rm -rf ${scratch}/data
