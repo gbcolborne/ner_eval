@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, unicode_literals
-from six import iteritems
+import os, argparse
 from io import open
-import os, argparse, math, string, re, unicodedata
 from collections import defaultdict, Counter
-import numpy as np
-from utils_hardeval import VALID_CHARS, unicode_to_ASCII, enforce_valid_bio2_labeling, get_bio2_mention_offsets, convert_bio2_to_bilou, compute_TER, get_word_label_count_dict, get_diff_indices,  write_table
+from utils_hardeval import enforce_valid_bio2_labeling, convert_bio2_to_bilou, compute_TER, get_word_label_count_dict, get_diff_indices, write_table
 
 doc="""Given NER predictions and training data, compute token error rate
 on various subsets of tokens. 
