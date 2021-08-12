@@ -1,5 +1,4 @@
 from __future__ import division, print_function, unicode_literals
-from io import open
 import string, re, unicodedata
 
 # Valid ASCII characters (not including whitespace)

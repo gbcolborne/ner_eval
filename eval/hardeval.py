@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, unicode_literals
 import os, argparse
-from io import open
 from collections import defaultdict, Counter
 from utils_hardeval import enforce_valid_bio2_labeling, convert_bio2_to_bilou, compute_TER, get_word_label_count_dict, get_diff_indices, write_table
 
