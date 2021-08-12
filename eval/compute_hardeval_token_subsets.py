@@ -27,7 +27,7 @@ def load_labeled_data(path):
     return (tokens, labels)
 
 
-def write_test_token_subsets(train_examples, test_examples, dir_output, strict=False):
+def get_test_token_subsets(train_examples, test_examples, dir_output, strict=False):
     # Extract data, convert labels to BILOU
     train_tokens, train_labels = zip(*train_examples)
     test_tokens, test_labels = zip(*test_examples)
@@ -112,14 +112,7 @@ def write_test_token_subsets(train_examples, test_examples, dir_output, strict=F
     test_etypes_UI = [test_labels_bilou[i][2:] for i in test_indices_UI]
     indices = get_diff_indices(word_etype_count, test_tokens_UI, test_etypes_UI, strict=strict)
     test_subsets["diff-etype"] = [test_indices_UI[i] for i in indices]
-
-    # Write token subsets
-    header = ["Line", "Token", "Label"]
-    for k in test_subsets:
-        data = [[str(i), test_tokens[i], test_labels[i]] for i in test_subsets[k]]
-        path = os.path.join(dir_output, 'tokens_%s.tsv' % k)
-        write_table(data, path, header=header, delim="\t")
-    return 
+    return test_subsets
 
 
 def write_label_freq_data(examples, dir_output):
@@ -162,6 +155,81 @@ def write_label_freq_data(examples, dir_output):
     return
 
 
+def main_with_test_set(args):
+    # Read train data
+    print("\nReading training data from {}...".format(os.path.abspath(args.path_train)))
+    train_tokens, train_labels = load_labeled_data(args.path_train)
+    train_examples = list(zip(train_tokens, train_labels))
+    print("Nb tokens in training set: {}".format(len(train_examples)))    
+        
+    # Read test data
+    print("\nReading test data from {}...".format(os.path.abspath(args.path_test)))
+    test_tokens, test_labels = load_labeled_data(args.path_test)
+    test_examples = list(zip(test_tokens, test_labels))
+    print("Nb tokens in test set: {}".format(len(test_examples)))        
+
+    # Write token subsets in test set
+    print("\nComputing token subsets in the test set by comparing to the training set...")        
+    test_subsets = get_test_token_subsets(train_examples, test_examples, args.strict)
+    header = ["Line", "Token", "Label"]
+    for subset_name, indices in test_subsets.items():
+        data = [[str(i), test_tokens[i], test_labels[i]] for i in indices]
+        path = os.path.join(args.dir_output, 'tokens_%s.tsv' % subset_name)
+        write_table(data, path, header=header, delim="\t")
+
+    # Write training data frequency info
+    print("Computing label frequencies in the training data...")
+    subdir = os.path.join(args.dir_output, "train_freqs")
+    os.makedirs(subdir)
+    write_label_freq_data(train_examples, subdir)
+    print("Done.\n")    
+    return
+
+
+def main_with_cv(args):
+    # Read train data
+    print("\nReading training data from {}...".format(os.path.abspath(args.path_train)))
+    all_train_tokens, all_train_labels = load_labeled_data(args.path_train)
+    print("Nb tokens in training set: {}".format(len(all_train_tokens)))
+    
+    # Do 10-fold cross-validation over the training set, and
+    # accumulate the token subsets for each test fold
+    print("\nComputing token subsets by running 10-fold CV over the training data...")
+    step = len(all_train_tokens) / 10
+    fold_boundaries = [(round(step*i),round(step*(i+1))) for i in range(10)]
+    train_subsets = {}
+    for fold_ix in range(10):
+        start, stop = fold_boundaries[fold_ix]
+        test_tokens = all_train_tokens[start:stop]
+        test_labels = all_train_labels[start:stop]
+        test_examples = list(zip(test_tokens, test_labels))
+        train_tokens = all_train_tokens[:start] + all_train_tokens[stop:]
+        train_labels = all_train_labels[:start] + all_train_labels[stop:]
+        train_examples = list(zip(train_tokens, train_labels))
+        test_subsets = get_test_token_subsets(train_examples, test_examples, args.strict)
+        for subset_name, indices in test_subsets.items():
+            if subset_name not in train_subsets:
+                train_subsets[subset_name] = []
+            train_subsets[subset_name] += indices
+        print("  %d" % (fold_ix+1))
+
+    # Write token subsets
+    header = ["Line", "Token", "Label"]
+    for subset_name, indices in train_subsets.items():
+        data = [[str(i), train_tokens[i], train_labels[i]] for i in indices]
+        path = os.path.join(args.dir_output, 'tokens_%s.tsv' % subset_name)
+        write_table(data, path, header=header, delim="\t")
+            
+    # Write training data frequency info
+    print("Computing label frequencies in the training data...")
+    subdir = os.path.join(args.dir_output, "train_freqs")
+    train_examples = list(zip(all_train_tokens, all_train_labels))
+    os.makedirs(subdir)
+    write_label_freq_data(train_examples, subdir)
+    print("Done.\n")
+    return
+
+
 def main():
     format_warning = "Must be contain whitespace-separated columns with labels in BIO-2 format in the last column."
     parser = argparse.ArgumentParser(description=doc)
@@ -185,26 +253,10 @@ def main():
     if os.path.exists(args.dir_output):
         raise ValueError("%s already exists" % args.dir_output)
     os.makedirs(args.dir_output)
-
-    print("\nReading training data from {}...".format(os.path.abspath(args.path_train)))
-    train_tokens, train_labels = load_labeled_data(args.path_train)
-    train_examples = list(zip(train_tokens, train_labels))
-    print("Nb tokens in training set: {}".format(len(train_examples)))    
-
-    # Do same for test file
-    if args.path_test is not None:
-        print("\nReading test data from {}...".format(os.path.abspath(args.path_test)))
-        test_tokens, test_labels = load_labeled_data(args.path_test)
-        test_examples = list(zip(test_tokens, test_labels))
-        print("Nb tokens in test set: {}".format(len(test_examples)))        
-
-    # Compute token subsets in test set
-    write_test_token_subsets(train_examples, test_examples, args.dir_output, args.strict)
-
-    # Write training data frequency info
-    subdir = os.path.join(args.dir_output, "train_freqs")
-    os.makedirs(subdir)
-    write_label_freq_data(train_examples, subdir)
+    if args.path_test is None:
+        main_with_cv(args)
+    else:
+        main_with_test_set(args)
     
     
 if __name__ == "__main__":
