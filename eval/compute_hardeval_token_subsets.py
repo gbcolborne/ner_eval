@@ -27,7 +27,7 @@ def load_labeled_data(path):
     return (tokens, labels)
 
 
-def compute_test_token_subsets(train_examples, test_examples, dir_output, strict=False):
+def write_test_token_subsets(train_examples, test_examples, dir_output, strict=False):
     # Extract data, convert labels to BILOU
     train_tokens, train_labels = zip(*train_examples)
     test_tokens, test_labels = zip(*test_examples)
@@ -88,20 +88,6 @@ def compute_test_token_subsets(train_examples, test_examples, dir_output, strict
     indices = get_diff_indices(word_io_count, test_tokens_O, test_labels_O, strict=strict)
     test_subsets["diff-O"] = [test_indices_O[i] for i in indices]
 
-    # Write IO prefix frequencies in training set for seen test words
-    # (excluding "O")
-    keys = ["I", "O"]
-    io_info = []
-    for word in test_vocab.intersection(train_vocab):
-        io_fd = {}
-        if word in word_io_count:
-            io_fd = word_io_count[word]
-        io_info.append([word] + [str(io_fd[k]) if k in io_fd else "0" for k in keys])
-    io_info = sorted(io_info, key=lambda x:x[0])
-    path = "{}/class_freqs_for_seen_words_IO.tsv".format(dir_output)
-    header = ["Word"] + keys
-    write_table(io_info, path, header=header, delim="\t")
-
     # I-X tokens that were usually I, but whose entity type was usually
     # (or exclusively) not X.
     train_indices_I = []
@@ -126,18 +112,6 @@ def compute_test_token_subsets(train_examples, test_examples, dir_output, strict
     test_etypes_UI = [test_labels_bilou[i][2:] for i in test_indices_UI]
     indices = get_diff_indices(word_etype_count, test_tokens_UI, test_etypes_UI, strict=strict)
     test_subsets["diff-etype"] = [test_indices_UI[i] for i in indices]
-    
-    # Write entity type frequencies in training set for seen test
-    # words (excluding "O")
-    keys = list(set(train_etypes_I))
-    etype_info = []
-    for word in test_vocab.intersection(word_etype_count.keys()):
-        etype_fd = word_etype_count[word]
-        etype_info.append([word] + [str(etype_fd[k]) if k in etype_fd else "0" for k in keys])
-    etype_info = sorted(etype_info, key=lambda x:x[0])
-    path = "{}/class_freqs_for_seen_words_etype.tsv".format(dir_output)
-    header = ["Word"] + keys
-    write_table(etype_info, path, header=header, delim="\t")
 
     # Write token subsets
     header = ["Line", "Token", "Label"]
@@ -146,6 +120,46 @@ def compute_test_token_subsets(train_examples, test_examples, dir_output, strict
         path = os.path.join(dir_output, 'tokens_%s.tsv' % k)
         write_table(data, path, header=header, delim="\t")
     return 
+
+
+def write_label_freq_data(examples, dir_output):
+    # Write IO prefix frequencies in training set
+    tokens, labels = zip(*examples)
+    enforce_valid_bio2_labeling(labels)    
+    labels_bilou = convert_bio2_to_bilou(labels)    
+    labels_io = ["O" if y == "O" else "I" for y in labels_bilou]    
+    word_io_count = get_word_label_count_dict(tokens, labels_io)    
+    keys = ["I", "O"]
+    io_data = []
+    for word in set(tokens):
+        io_fd = {}
+        if word in word_io_count:
+            io_fd = word_io_count[word]
+        io_data.append([word] + [str(io_fd[k]) if k in io_fd else "0" for k in keys])
+    io_data = sorted(io_data, key=lambda x:x[0])
+    path = "{}/io_freqs.tsv".format(dir_output)
+    header = ["Word"] + keys
+    write_table(io_data, path, header=header, delim="\t")
+    
+    # Write entity type frequencies in training set for seen test
+    # words (excluding "O")
+    indices_I = []
+    for i,label in enumerate(labels_io):
+        if label == "I":
+            indices_I.append(i)            
+    tokens_I = [tokens[i] for i in indices_I]
+    etypes_I = [labels_bilou[i][2:] for i in indices_I]
+    word_etype_count = get_word_label_count_dict(tokens_I, etypes_I)    
+    keys = list(set(etypes_I))
+    etype_data = []
+    for word in word_etype_count.keys():
+        etype_fd = word_etype_count[word]
+        etype_data.append([word] + [str(etype_fd[k]) if k in etype_fd else "0" for k in keys])
+    etype_data = sorted(etype_data, key=lambda x:x[0])
+    path = "{}/etype_freqs.tsv".format(dir_output)
+    header = ["Word"] + keys
+    write_table(etype_data, path, header=header, delim="\t")
+    return
 
 
 def main():
@@ -185,8 +199,13 @@ def main():
         print("Nb tokens in test set: {}".format(len(test_examples)))        
 
     # Compute token subsets in test set
-    compute_test_token_subsets(train_examples, test_examples, args.dir_output, args.strict)
+    write_test_token_subsets(train_examples, test_examples, args.dir_output, args.strict)
 
+    # Write training data frequency info
+    subdir = os.path.join(args.dir_output, "train_freqs")
+    os.makedirs(subdir)
+    write_label_freq_data(train_examples, subdir)
+    
     
 if __name__ == "__main__":
     main()
