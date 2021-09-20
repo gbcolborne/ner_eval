@@ -33,7 +33,7 @@ def unicode_to_ASCII(s):
 def enforce_valid_bio2_labeling(labels):
     prev_prefix = 'O'
     prev_etype = None
-    for label in labels:
+    for label_ix, label in enumerate(labels):
         if label == 'O':
             etype = None
         else:
@@ -41,11 +41,11 @@ def enforce_valid_bio2_labeling(labels):
         prefix = label[0]
         if prefix == 'I':
             if prev_prefix == 'O':
-                msg = 'Invalid BIO-2 labeling: I follows O'
+                msg = 'Invalid BIO-2 labeling at index %d: I follows O' % label_ix
                 raise ValueError(msg)
             if etype != prev_etype:
                 print(labels)
-                msg = 'Invalid BIO-2 labeling: I follows label with different entity type'
+                msg = 'Invalid BIO-2 labeling at index %d: I follows label with different entity type' % label_ix
                 raise ValueError(msg)
         prev_prefix = prefix
         prev_etype = etype

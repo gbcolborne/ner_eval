@@ -31,7 +31,9 @@ def get_test_token_subsets(train_examples, test_examples, dir_output, strict=Fal
     # Extract data, convert labels to BILOU
     train_tokens, train_labels = zip(*train_examples)
     test_tokens, test_labels = zip(*test_examples)
+    print("    Checking train labels")    
     enforce_valid_bio2_labeling(train_labels)
+    print("    Checking test labels")        
     enforce_valid_bio2_labeling(test_labels)
     train_vocab = set(train_tokens)
     test_vocab = set(test_tokens)
@@ -211,7 +213,7 @@ def main_with_cv(args):
             if subset_name not in train_subsets:
                 train_subsets[subset_name] = []
             train_subsets[subset_name] += indices
-        print("  %d" % (fold_ix+1))
+        print("  Fold %d. Test fold line nums: %d-%d" % (fold_ix+1, start, stop))
 
     # Write token subsets
     header = ["Line", "Token", "Label"]
