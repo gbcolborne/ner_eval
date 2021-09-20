@@ -184,6 +184,20 @@ def main_with_test_set(args):
     subdir = os.path.join(args.dir_output, "train_freqs")
     os.makedirs(subdir)
     write_label_freq_data(train_examples, subdir)
+
+    # Write annotated dataset with added DIFF tags
+    line_num_to_tag = {}
+    for subset_name, indices in test_subsets.items():
+        for i in indices:
+            line_num_to_tag[i] = subset_name
+    path = os.path.join(args.dir_output, 'annotated.tsv')
+    print("Writing annotated dataset in %s..." % path)    
+    with open(path, 'w') as f:
+        for i, (word, label) in enumerate(test_examples):
+            msg = "%s\t%s" % (word, label)
+            if i in line_num_to_tag:
+                msg += "\t%s" % line_num_to_tag[i]
+            f.write(msg + "\n")
     print("Done.\n")    
     return
 
@@ -238,6 +252,20 @@ def main_with_cv(args):
     train_examples = list(zip(all_train_tokens, all_train_labels))
     os.makedirs(subdir)
     write_label_freq_data(train_examples, subdir)
+
+    # Write annotated dataset with added DIFF tags
+    line_num_to_tag = {}
+    for subset_name, indices in train_subsets.items():
+        for i in indices:
+            line_num_to_tag[i] = subset_name
+    path = os.path.join(args.dir_output, 'annotated.tsv')
+    print("Writing annotated dataset in %s..." % path)    
+    with open(path, 'w') as f:
+        for i, (word, label) in enumerate(train_examples):
+            msg = "%s\t%s" % (word, label)
+            if i in line_num_to_tag:
+                msg += "\t%s" % line_num_to_tag[i]
+            f.write(msg + "\n")
     print("Done.\n")
     return
 
