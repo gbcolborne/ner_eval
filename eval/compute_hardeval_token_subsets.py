@@ -198,7 +198,16 @@ def main_with_cv(args):
     # accumulate the token subsets for each test fold
     print("\nComputing token subsets by running 10-fold CV over the training data...")
     step = len(all_train_tokens) / 10
-    fold_boundaries = [(round(step*i),round(step*(i+1))) for i in range(10)]
+    fold_boundaries = [round(step*i) for i in range(11)]
+    # Adjust fold boundaries. Make sure a fold never starts in the middle of a named entity.
+    for i in range(1, 10):
+        b = fold_boundaries[i]
+        while all_train_labels[b][0] == 'I':
+            b -= 1
+        if b < fold_boundaries[i]:
+            print("  WARNING: Boundary %d changed to %d to avoid splitting a named entity." % (fold_boundaries[i], b))
+            fold_boundaries[i] = b
+    fold_boundaries = list(zip(fold_boundaries[:-1], fold_boundaries[1:]))
     train_subsets = {}
     for fold_ix in range(10):
         start, stop = fold_boundaries[fold_ix]
