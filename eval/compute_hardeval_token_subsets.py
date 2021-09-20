@@ -228,7 +228,7 @@ def main_with_cv(args):
     # Write token subsets
     header = ["Line", "Token", "Label"]
     for subset_name, indices in train_subsets.items():
-        data = [[str(i), train_tokens[i], train_labels[i]] for i in indices]
+        data = [[str(i), all_train_tokens[i], all_train_labels[i]] for i in indices]
         path = os.path.join(args.dir_output, 'tokens_%s.tsv' % subset_name)
         write_table(data, path, header=header, delim="\t")
             
