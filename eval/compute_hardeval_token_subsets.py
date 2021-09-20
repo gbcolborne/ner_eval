@@ -219,9 +219,10 @@ def main_with_cv(args):
         train_examples = list(zip(train_tokens, train_labels))
         test_subsets = get_test_token_subsets(train_examples, test_examples, args.strict)
         for subset_name, indices in test_subsets.items():
+            indices_corr = [x+start for x in indices]
             if subset_name not in train_subsets:
                 train_subsets[subset_name] = []
-            train_subsets[subset_name] += indices
+            train_subsets[subset_name] += indices_corr
         print("  Fold %d. Test fold line nums: %d-%d" % (fold_ix+1, start, stop))
 
     # Write token subsets
